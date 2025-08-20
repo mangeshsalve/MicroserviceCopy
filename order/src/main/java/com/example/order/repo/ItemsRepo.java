@@ -3,8 +3,8 @@ package com.example.order.repo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.example.order.model.Orders;
+import com.example.order.model.Items;
 @Repository
-public interface OrderRepo extends JpaRepository<Orders,Integer> {
+public interface ItemsRepo extends JpaRepository<Items, Integer> {
 
 }

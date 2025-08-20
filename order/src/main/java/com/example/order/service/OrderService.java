@@ -1,6 +1,9 @@
 package com.example.order.service;
 
-import com.example.order.model.OrderDto;
+import com.example.order.dto.ItemsDto;
+import com.example.order.dto.OrderDto;
+import com.example.order.model.Items;
+import com.example.order.model.Orders;
 import com.example.order.repo.OrderRepo;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,34 +18,114 @@ import java.util.stream.Collectors;
 @Service
 public class OrderService {
 
-    private List<OrderDto> orders;
-
     @Autowired
     private OrderRepo orderRepo;
 
     public List<OrderDto> getOrders() {
-        return orderRepo.findAll();
+    	
+    	 List<Orders> all = orderRepo.findAll();
+    	 	List<OrderDto> list= all.stream().map(
+    			 od->{
+    				 OrderDto odto=new OrderDto();
+    				 
+    				 
+    				 odto.setId(od.getId());
+    				 odto.setStatus(od.getStatus());
+    				 
+    				 List<Items> items = od.getItems();
+   				 List<ItemsDto> collect = items.stream().map(
+    						 item->{
+    							 ItemsDto idto=new ItemsDto();
+    							 idto.setItemId(item.getItemId());
+    							 idto.setCategory(item.getCategory());
+    							 idto.setCurrency(item.getCurrency());
+    							 idto.setDescription(item.getDescription());
+    							 idto.setDiscount(item.getDiscount());
+    							 idto.setImageUrl(item.getImageUrl());
+    							 idto.setName(item.getName());
+    							 idto.setProductCode(item.getProductCode());
+    							 idto.setQuantity(item.getQuantity());
+    							 idto.setUnitPrice(item.getUnitPrice());
+    							 return idto;
+    							
+    						 }
+    						 
+    						 
+    						 ).collect(Collectors.toList());
+   				odto.setItems(collect);
+    				 return odto;
+    			 }).collect(Collectors.toList());
+    	 	
+    	 
+        return list;
     }
 
-    public Optional<OrderDto> getOrder(int id) {
-        return orderRepo.findById(id);
+    public OrderDto getOrder(int id) {
+    	Optional<Orders> byId = orderRepo.findById(id);
+    	OrderDto odto=new OrderDto();
+    	byId.ifPresent(od->{
+    		odto.setId(od.getId());
+    		
+    		odto.setStatus(od.getStatus());
+    		List<Items> items = od.getItems();
+			 List<ItemsDto> collect = items.stream().map(
+					 item->{
+						 ItemsDto idto=new ItemsDto();
+						 idto.setItemId(item.getItemId());
+						 idto.setCategory(item.getCategory());
+						 idto.setCurrency(item.getCurrency());
+						 idto.setDescription(item.getDescription());
+						 idto.setDiscount(item.getDiscount());
+						 idto.setImageUrl(item.getImageUrl());
+						 idto.setName(item.getName());
+						 idto.setProductCode(item.getProductCode());
+						 idto.setQuantity(item.getQuantity());
+						 idto.setUnitPrice(item.getUnitPrice());
+						 return idto;
+						
+					 }
+					 
+					 
+					 ).collect(Collectors.toList());
+			 odto.setItems(collect);
+    	});
+        return odto ;
     }
 
-    public OrderDto addOrder(OrderDto orderDto) {
+    public Orders addOrder(Orders orderDto) {
 
         return orderRepo.save(orderDto);
     }
 
-    public OrderDto updateOrder(OrderDto orderDto) {
-        Optional<OrderDto> orderOptional = orders.stream()
-                .filter(order -> order.getId() == orderDto.getId())
-                .map(order -> {
-                    order.setItems(orderDto.getItems());
-                    order.setStatus(orderDto.getStatus());
-                    return order;
-                }).findFirst();
-
-        return orderOptional.isPresent() ? orderOptional.get() : null;
+    public String updateOrder(OrderDto orderDto) {
+    	
+    	Optional<Orders> byId = orderRepo.findById(orderDto.getId());
+    	byId.ifPresent(od->{
+    		od.setStatus(orderDto.getStatus());
+    		List<ItemsDto> items = orderDto.getItems();
+    		List<Items> collect = items.stream().map(
+    				
+    				itemDtos -> {
+    					Items it= new Items();
+    					it.setItemId(itemDtos.getItemId());
+    					it.setCategory(itemDtos.getCategory());
+    					it.setCurrency(itemDtos.getCurrency());
+    					it.setDescription(itemDtos.getDescription());
+    					it.setDiscount(itemDtos.getDiscount());
+    					it.setImageUrl(itemDtos.getImageUrl());
+    					it.setName(itemDtos.getName());
+    					it.setProductCode(itemDtos.getProductCode());
+    					it.setQuantity(itemDtos.getQuantity());
+    					it.setUnitPrice(itemDtos.getUnitPrice());
+    					return it;
+    				}
+    				
+    				).collect(Collectors.toList());
+    		od.setItems(collect);
+    		orderRepo.save(od);
+    	});
+    	
+        return "Update Succesfully";
     }
 
     public void deleteOrder(Integer id) {

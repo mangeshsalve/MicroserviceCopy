@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
-import com.example.demo.model.UserDto;
+import com.example.demo.dto.UsersDto;
+import com.example.demo.model.Users;
 import com.example.demo.service.UserService;
 
 
@@ -20,29 +21,34 @@ public class UserController {
     public UserController(final UserService userService) {
         this.userService = userService;
     }
+    
+    @GetMapping("/test")
+    public String getTest() {
+    	return "Testing Done";
+    }
 
     @GetMapping("/all")
-    public List<UserDto> getUsers() {
+    public List<UsersDto> getUsers() {
         return userService.getUsers();
     }
 
     @GetMapping
-    public Optional<UserDto> getUser(
+    public UsersDto getUser(
             @RequestParam(name = "id") int id
     ) {
         return userService.getUser(id);
     }
 
     @PostMapping
-    public UserDto addUser(
-            @Validated @RequestBody UserDto userDto
+    public Users addUser(
+            @Validated @RequestBody UsersDto userDto
     ) {
         return userService.addUser(userDto);
     }
 
     @PutMapping
-    public UserDto updateUser(
-            @Validated @RequestBody UserDto userDto
+    public Users updateUser(
+            @Validated @RequestBody UsersDto userDto
     ) {
         return userService.updateUser(userDto);
     }
