@@ -14,10 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.order.dto.ItemsDto;
-import com.example.order.dto.OrderDto;
-import com.example.order.model.Orders;
 import com.example.order.service.ItemsService;
-import com.example.order.service.OrderService;
 
 @RestController
 @RequestMapping("/item")

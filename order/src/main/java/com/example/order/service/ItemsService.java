@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.example.order.dto.ItemsDto;
 import com.example.order.model.Items;
-import com.example.order.model.Orders;
 import com.example.order.repo.ItemsRepo;
 
 @Service

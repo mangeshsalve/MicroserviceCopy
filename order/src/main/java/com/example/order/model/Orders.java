@@ -1,6 +1,6 @@
 package com.example.order.model;
 
-
+import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
@@ -9,10 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
-
-import java.util.List;
-
-
 
 @Entity
 public class Orders {
@@ -42,8 +38,5 @@ public class Orders {
 	public void setStatus(String status) {
 		this.status = status;
 	}
-
-    
-    
-    
+   
 }

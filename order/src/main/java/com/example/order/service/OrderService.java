@@ -1,19 +1,17 @@
 package com.example.order.service;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.example.order.dto.ItemsDto;
 import com.example.order.dto.OrderDto;
 import com.example.order.model.Items;
 import com.example.order.model.Orders;
 import com.example.order.repo.OrderRepo;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class OrderService {

@@ -1,39 +1,25 @@
 package com.example.demo.dto;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import java.util.Set;
 
+import lombok.Data;
+
+@Data
 public class UsersDto {
 
     private int id;
-    private String name;
     private boolean active;
-
-	public int getId() {
-		return id;
-	}
-	public void setId(int id) {
-		this.id = id;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public boolean isActive() {
-		return active;
-	}
-	public void setActive(boolean active) {
-		this.active = active;
-	}
-	
+    private String username;
+    private String email;
+    private String firstName;
+    private String lastName;
+    private Set<String> roles;
+    
+    
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
-		return "Id"+id+"Name"+name+"Active"+active;
+		return "UsersDto [id=" + id + ", active=" + active + ", username=" + username + ", email=" + email
+				+ ", firstName=" + firstName + ", lastName=" + lastName + ", role=" + roles + "]";
 	}
-    
-    
+	
 }
