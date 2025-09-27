@@ -13,14 +13,19 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.Data;
 
 @Data
 @Entity
+@Table(name = "users",uniqueConstraints = {
+		@UniqueConstraint(columnNames = "username"),
+		@UniqueConstraint(columnNames = "email")
+})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Users {
     @Id
-    
     @GeneratedValue(strategy = GenerationType.AUTO)
     private int id;
     private boolean active;

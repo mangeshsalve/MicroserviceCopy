@@ -1,19 +1,26 @@
 package com.example.demo.service;
 
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dto.UserRegistrationDto;
 import com.example.demo.dto.UsersDto;
+import com.example.demo.exception.UserNotExistExceptions;
 import com.example.demo.model.Roles;
 import com.example.demo.model.Users;
 import com.example.demo.repo.RoleRepo;
@@ -21,7 +28,7 @@ import com.example.demo.repo.UserRepo;
 
 
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
 	@Autowired
 	private PasswordEncoder passwordEncoder;
     @Autowired
@@ -41,26 +48,22 @@ public class UserService {
     				dto.setId(user.getId());
     				dto.setFirstName(user.getFirstName());
     				dto.setLastName(user.getLastName());
-    				
     				dto.setEmail(user.getEmail());
     				dto.setUsername(user.getUsername());
     				dto.setActive(user.isActive());
-    				
     				Set<String> collectRoleNames = user.getRoles().stream().map(Roles :: getName).collect(Collectors.toSet());
     	    		dto.setRoles(collectRoleNames);
     				return dto;
     			}
-    			
-    			
     			).collect(Collectors.toList());
     	
         return collect;
     }
 
     public UsersDto getUser(int id) {
-    	Optional<Users> byId = userRepo.findById(id);
+    	Users user = userRepo.findById(id).orElseThrow(() -> new UserNotExistExceptions("User with ID "+id+" doesnot exist"));
     	UsersDto dto=new UsersDto();
-    	byId.ifPresent(user->{
+    	if(user!=null) {
 			dto.setId(user.getId());
 			dto.setFirstName(user.getFirstName());
 			dto.setLastName(user.getLastName());
@@ -71,12 +74,21 @@ public class UserService {
 			
 			Set<String> collectRoleNames = user.getRoles().stream().map(Roles :: getName).collect(Collectors.toSet());
     		dto.setRoles(collectRoleNames);
-    	});
+    	}
     	
         return dto;
     }
 
-    public ResponseEntity<String> addUser(UserRegistrationDto  userRegistrationDto) {
+
+
+	public ResponseEntity<String> addUser(UserRegistrationDto  userRegistrationDto) {
+		if(userRepo.existsByEmail(userRegistrationDto.getEmail())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exist in System");
+		}
+		if(userRepo.existsByUsername(userRegistrationDto.getUsername())) {
+			return ResponseEntity.status(HttpStatus.CONFLICT).body("Username already exist in System");
+		}		
+		
     	Users users=new Users();
     	users.setFirstName(userRegistrationDto.getFirstName());
     	users.setLastName(userRegistrationDto.getLastName());
@@ -85,7 +97,9 @@ public class UserService {
     	users.setActive(userRegistrationDto.isActive());
     	
     	Roles roles = roleRepo.findByName("ROLE_USER").orElseThrow(()-> new RuntimeException("Default Role Not found"));
+    	Roles roles1 = roleRepo.findByName("ROLE_ADMIN").orElseThrow(()-> new RuntimeException("Default Role Not found"));
     	users.getRoles().add(roles);
+    	users.getRoles().add(roles1);
     	users.setPassword(passwordEncoder.encode(userRegistrationDto.getPassword()));
     	
     	Users save = userRepo.save(users);
@@ -112,6 +126,22 @@ public class UserService {
     public void deleteUser(int id) {
 
        userRepo.deleteById(id);;
+    }
+    
+    
+    public UserDetails loadUserByUsername(String email) throws UserNotExistExceptions {
+    	Users user = userRepo.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+    	
+    	List<SimpleGrantedAuthority> authorities = user.getRoles().stream()
+    			.map(Roles :: getName)
+    	            .map(SimpleGrantedAuthority::new)
+    	            .toList();
+        return new org.springframework.security.core.userdetails.User(
+                user.getEmail(),
+                user.getPassword(),
+                authorities
+        );
     }
 
 

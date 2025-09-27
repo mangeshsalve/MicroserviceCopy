@@ -3,9 +3,11 @@ package com.example.demo.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,35 +38,36 @@ public class UserController {
     }
 
     @GetMapping("/all")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UsersDto> getUsers() {
         return userService.getUsers();
     }
 
-    @GetMapping
-    public UsersDto getUser(
-            @RequestParam(name = "id") int id
-    ) {
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
+    public UsersDto getUser(@PathVariable int id ) {
         return userService.getUser(id);
     }
 
-    @PostMapping
+    @PostMapping(value = "/register")
     public ResponseEntity<String>  addUser(
             @Validated @RequestBody UserRegistrationDto userRegistrationDto
     ) {
-    	System.out.println("inside controller ***********************************************");
         return userService.addUser(userRegistrationDto);
     }
 
     @PutMapping
+    @PreAuthorize("hasRole('ADMIN') or #id == authentication.principal.id")
     public Users updateUser(
             @Validated @RequestBody UsersDto userDto
     ) {
         return userService.updateUser(userDto);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(
-            @RequestParam(name = "id") int id
+            @PathVariable int id
     ) {
          userService.deleteUser(id);
     }

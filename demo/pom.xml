@@ -61,10 +61,10 @@
 		    <artifactId>lombok</artifactId>
 		    <scope>provided</scope>
 		</dependency>
-    	<dependency>
+    <!-- 	<dependency>
 	        <groupId>org.springframework.cloud</groupId>
 	        <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
-        </dependency>
+        </dependency>-->
         <dependency>
 		  <groupId>io.jsonwebtoken</groupId>
 		  <artifactId>jjwt-api</artifactId>
@@ -81,6 +81,12 @@
 		  <artifactId>jjwt-jackson</artifactId>
 		  <version>0.12.5</version>
 		  <scope>runtime</scope>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+		<dependency>
+		    <groupId>jakarta.validation</groupId>
+		    <artifactId>jakarta.validation-api</artifactId>
+		    <version>3.0.2</version>
 		</dependency>
 	</dependencies>
 	<dependencyManagement>
