@@ -2,6 +2,10 @@ package com.example.order.model;
 
 import java.util.List;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
+import jakarta.persistence.Cacheable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,9 +15,11 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
 
 @Entity
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
 public class Orders {
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY )
+	@GeneratedValue(strategy = GenerationType.AUTO )
     private int id;
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
