@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.order.dto.OrderDto;
 import com.example.order.model.Orders;
+import com.example.order.service.JWTService;
 import com.example.order.service.OrderService;
 
 @RestController
@@ -26,6 +27,9 @@ public class OrderController {
 
 	@Autowired
     private OrderService orderService;
+	
+	@Autowired
+	private JWTService jwtService;
 
     public OrderController(final OrderService orderService) {
         this.orderService = orderService;
@@ -47,11 +51,12 @@ public class OrderController {
     @PostMapping("/addOrder")
     @PreAuthorize("hasRole('USER')")
     public Orders addOrder(
-            @Validated @RequestBody Orders orderDto,
+            @Validated @RequestBody OrderDto orderDto,
             @RequestHeader("Authorization") String authHeader
     ) {
     	 String token = authHeader.substring(7);
-    	// int userId = jwtUtil.extractUserId(token);
+    	 int userId = jwtService.extractUserId(token);
+    	 orderDto.setUserId(userId);
         return orderService.addOrder(orderDto);
     }
 

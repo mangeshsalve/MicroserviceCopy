@@ -47,4 +47,8 @@ public class JWTService {
             throw new RuntimeException("Unable to extract claim: " + claimName);
         }
     }
+
+	public int extractUserId(String token) {
+		 return parse(token).getPayload().get("userId", Integer.class);
+	}
 }

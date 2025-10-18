@@ -8,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.order.dto.ItemsDto;
+import com.example.order.dto.NotificationDto;
 import com.example.order.dto.OrderDto;
+import com.example.order.dto.UserDto;
 import com.example.order.model.Items;
 import com.example.order.model.Orders;
 import com.example.order.repo.OrderRepo;
@@ -18,6 +20,12 @@ public class OrderService {
 
     @Autowired
     private OrderRepo orderRepo;
+    
+    @Autowired
+    private UserClient userClient;
+    
+    @Autowired
+    private NotificationClient notificationClient;
 
     public List<OrderDto> getOrders() {
     	
@@ -90,9 +98,30 @@ public class OrderService {
         return odto ;
     }
 
-    public Orders addOrder(Orders orderDto) {
-
-        return orderRepo.save(orderDto);
+    public Orders addOrder(OrderDto orderDto) {
+    	Orders orders=new Orders();
+    	orders.setId(orderDto.getId());
+    	orders.setUserId(orderDto.getUserId());
+    	orders.setStatus(orderDto.getStatus());
+    	
+    	orders.setItems(orderDto.getItems().stream().map(it-> {
+    		Items its=new Items();
+    		its.setItemId(it.getItemId());
+    		its.setName(it.getName());   		
+    		its.setProductCode(it.getProductCode());    		
+    		its.setQuantity(it.getQuantity());   
+ 		
+    		return its;
+    	}).collect(Collectors.toList()));
+    	UserDto userById = userClient.getUserById(orderDto.getUserId());
+    	NotificationDto dto =new NotificationDto();
+    	dto.setTo(userById.getEmail());
+    	dto.setMessage("Hi "+userById.getUsername() + " "+"Your order has been placed");
+    	
+    	notificationClient.sendNotification(dto);
+    	
+    	
+        return orderRepo.save(orders);
     }
 
     public String updateOrder(OrderDto orderDto) {
