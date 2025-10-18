@@ -21,7 +21,7 @@ import com.example.demo.auth.JwtAuthFilter;
 public class SecurityConfig {
 
 	@Bean
-	SecurityFilterChain security(HttpSecurity http, JwtAuthFilter jwtFilter) throws Exception {
+	protected SecurityFilterChain security(HttpSecurity http, JwtAuthFilter jwtFilter) throws Exception {
 		http.sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 	  http.csrf(csrf -> csrf.disable())
 	     .authorizeHttpRequests(auth -> auth

@@ -31,11 +31,12 @@ public class JWTService {
         this.SECRATE_KEY = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
     }
 	
-	public String generate(String username,Collection<String> roles) {
+	public String generate(String username,int id,Collection<String> roles) {
 	
 		return Jwts.builder()
 				.subject(username)
 				.claim("roles", roles)
+				.claim("userId", id)
 				.issuedAt(new Date())
 				.expiration(new Date(System.currentTimeMillis()+3600_000))
 				.signWith(SECRATE_KEY)
